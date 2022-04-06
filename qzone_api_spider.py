@@ -8,6 +8,7 @@ import requests
 from qq_encry import gtk
 from qzone_login import get_sessions
 
+
 def get_qzonetoken(s):
     url = "https://h5.qzone.qq.com/mqzone/index"
 
@@ -27,7 +28,7 @@ def get_gtk(s):
     return gtk_num
 
 
-def get_active_feeds(s, qzonetoken, gtk_num):
+def get_active_feeds(s, qzonetoken, gtk_num, n=1):
     url = f"https://h5.qzone.qq.com/webapp/json/mqzone_feeds/getActiveFeeds?qzonetoken={qzonetoken}&g_tk={gtk_num}"
 
     headers = {
@@ -38,14 +39,17 @@ def get_active_feeds(s, qzonetoken, gtk_num):
         'Origin': 'https://h5.qzone.qq.com',
         'Referer': 'https://h5.qzone.qq.com/mqzone/index'
     }
+    for i in range(n):
+        if i == 0:
+            response = s.post(url, headers=headers)
+            response_json = json.loads(response.text)
 
-    response = s.post(url, headers=headers)
-    response_json = json.loads(response.text)
+            payload = response_json["data"]["attachinfo"]
+            feeds_list = response_json["data"]["vFeeds"]
+        else:
+            response = s.post(url, headers=headers, data=payload)
+            response_json = json.loads(response.text)
+            payload = response_json["data"]["attachinfo"]
+            feeds_list += response_json["data"]["vFeeds"]
 
-    with open('example.json', 'w') as f:
-        json.dump(response_json, f)
-
-s = get_sessions()
-qzonetoken = get_qzonetoken(s)
-gtk_num = get_gtk(s)
-get_active_feeds(s, qzonetoken, gtk_num)
+    return feeds_list
