@@ -7,6 +7,9 @@ from qq_encry import hash33
 
 
 def get_qr_img(s):
+    '''
+    获取登录二维码
+    '''
     url = "https://ssl.ptlogin2.qq.com/ptqrshow?appid=549000912&e=2&l=M&s=3&d=72&v=4&daid=5&pt_3rd_aid=0"
 
     headers = {
@@ -20,12 +23,18 @@ def get_qr_img(s):
 
 
 def get_ptqrtoken(s):
+    '''
+    通过QQ加密算法得到ptqetoken
+    '''
     cookies_doct = s.cookies.get_dict()
     ptqrtoken = hash33(cookies_doct['qrsig'])
     return ptqrtoken
 
 
 def get_ptqrlogin(s, ptqrtoken):
+    '''
+    获取当前二维码登陆状态
+    '''
     url = 'https://ssl.ptlogin2.qq.com/ptqrlogin'
     params = {
         'u1': 'https://qzs.qzone.qq.com/qzone/v5/loginsucc.html?para=izone',
@@ -52,6 +61,9 @@ def get_ptqrlogin(s, ptqrtoken):
 
 
 def get_jump_url(s, jump_text):
+    '''
+    获取登录跳转链接并点击访问跳转链接
+    '''
     jump_url = jump_text.split("'")[5]
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:98.0) Gecko/20100101 Firefox/98.0'
@@ -71,6 +83,9 @@ def save_session(s):
 
 
 def login_session():
+    '''
+    登录集成函数
+    '''
     s = requests.session()
     get_qr_img(s)
     ptqrtoken = get_ptqrtoken(s)
