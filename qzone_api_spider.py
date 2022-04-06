@@ -53,3 +53,36 @@ def get_active_feeds(s, qzonetoken, gtk_num, n=1):
             feeds_list += response_json["data"]["vFeeds"]
 
     return feeds_list
+
+
+def get_person_feeds(s, gtk_num, uin, qzonetoken, n=1):
+    feeds_list = []
+
+    for i in range(n):
+        url = 'https://h5.qzone.qq.com/proxy/domain/taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6?'
+        params = {
+            "sort": 0,
+            "start": 0,
+            "num": 20,
+            "cgi_host": "http://taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6",
+            "replynum": 100,
+            "callback": "_preloadCallback",
+            "code_version": 1,
+            "inCharset": "utf-8",
+            "outCharset": "utf-8",
+            "notice": 0,
+            "format": "jsonp",
+            "need_private_comment": 1,
+            "g_tk": gtk_num,
+            "qzonetoken": qzonetoken,
+            "uin": uin,
+            "pos": 20
+        }
+
+        response = s.get(url, params=params)
+        response_str = re.findall(
+            '^_preloadCallback\((.*?)\);$', response.text)[0]
+        response_json = json.loads(response_str)
+        feeds_list += response_json["msglist"]
+    with open("test_data3.json", "w", encoding="utf-8") as f:
+        json.dump(feeds_list, f)
