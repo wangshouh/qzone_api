@@ -86,3 +86,37 @@ def get_person_feeds(s, gtk_num, uin, qzonetoken, n=1):
         feeds_list += response_json["msglist"]
     with open("test_data3.json", "w", encoding="utf-8") as f:
         json.dump(feeds_list, f)
+
+
+def get_feeds(s, qzonetoken, gtk_num, uin, n=1):
+    url = "https://mobile.qzone.qq.com/get_feeds"
+
+    param = {
+        "qzonetoken": qzonetoken,
+        "g_tk": gtk_num,
+        "hostuin": uin,
+        "format": "json",
+        'Accept-Encoding': 'gzip, deflate, br',
+        "res_type": 2
+    }
+    headers = {
+        'Accept': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Android 11; Mobile; rv:83.0) Gecko/83.0 Firefox/83.0'
+    }
+
+    response = s.get(url, headers=headers, params=param)
+    response_json = json.loads(response.text)
+    for i in range(n):
+        if i == 0:
+            response = s.get(url, headers=headers, params=param)
+            response_json = json.loads(response.text)
+            payload = response_json["data"]["attachinfo"]
+            feeds_list = response_json["data"]["vFeeds"]
+        else:
+            param['res_attach'] = payload
+            response = s.get(url, headers=headers, params=param)
+            response_json = json.loads(response.text)
+            payload = response_json["data"]["attachinfo"]
+            feeds_list += response_json["data"]["vFeeds"]
+
+    return feeds_list
