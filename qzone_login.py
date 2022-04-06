@@ -1,6 +1,8 @@
-import pickle
-import time
 import os
+import pickle
+import subprocess
+import sys
+import time
 
 import requests
 
@@ -21,6 +23,21 @@ def get_qr_img(s):
         response = s.get(url, headers=headers)
         img_data = response.content
         f.write(img_data)
+
+        if sys.platform.find('darwin') >= 0:
+            try:
+                os.system("open " + 'qr.png')
+                print("打开二维码图片成功")
+            except:
+                print("打开二维码图片失败")
+        # for linux
+        elif sys.platform.find('linux') >= 0:
+            subprocess.call(['xdg-open', 'qr.png'])
+        # for windows
+        elif sys.platform.find('win32') >= 0:
+            os.startfile('qr.png')
+        else:
+            subprocess.call(['xdg-open', 'qr.png'])
 
 
 def get_ptqrtoken(s):
