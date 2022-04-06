@@ -95,4 +95,14 @@ def login_session():
     return s
 
 
+def get_sessions():
+    '''
+    获取session
+    '''
+    if os.path.exists('session.pickle'):
+        with open('session.pickle', 'rb') as f:
+            s = pickle.load(f)
+    else:
+        s = login_session()
 
+    return s
