@@ -57,7 +57,6 @@ def get_active_feeds(s, qzonetoken, gtk_num, n=1):
 
 def get_person_feeds(s, gtk_num, uin, qzonetoken, n=1):
     feeds_list = []
-
     for i in range(n):
         url = 'https://h5.qzone.qq.com/proxy/domain/taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6?'
         params = {
@@ -84,8 +83,8 @@ def get_person_feeds(s, gtk_num, uin, qzonetoken, n=1):
             '^_preloadCallback\((.*?)\);$', response.text)[0]
         response_json = json.loads(response_str)
         feeds_list += response_json["msglist"]
-    with open("test_data3.json", "w", encoding="utf-8") as f:
-        json.dump(feeds_list, f)
+
+    return feeds_list
 
 
 def get_feeds(s, qzonetoken, gtk_num, uin, n=1):
@@ -120,3 +119,27 @@ def get_feeds(s, qzonetoken, gtk_num, uin, n=1):
             feeds_list += response_json["data"]["vFeeds"]
 
     return feeds_list
+
+
+def get_likes_info(uin, key, gtk_num, s):
+    url = "https://h5.qzone.qq.com/proxy/domain/users.qzone.qq.com/cgi-bin/likes/get_like_list_app"
+    param = {
+        "uin": uin,
+        "g_tk": gtk_num,
+        "unikey": key,
+        "begin_uin": 0,
+        "query_count": 60,
+        "if_first_page": 1,
+        "format": "json"
+    }
+
+    response = s.get(url, params=param)
+
+    json_text = response.text.encode('ISO-8859-1').decode('utf-8')
+
+    response_json = json.loads(
+        json_text[response.text.find('(')+1: json_text.rfind(')')])
+
+    like_uin_info = response_json['data']['like_uin_info']
+
+    return like_uin_info
