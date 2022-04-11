@@ -53,3 +53,16 @@
 
 该函数返回由说说组成的`list`对象，可通过遍历获取每一条的详细信息。
 
+### Get Likes info / 获取个人点赞信息
+
+`qzone_api_spider.py`中的`get_likes_info(uin, key, gtk_num, s)`函数用来获取QQ空间中的个人说说的详细点赞信息，包括但不限于所有点赞者的QQ号码、QQ昵称、点赞时间。
+
+注意：该函数无法获取他人说说的具体点赞情况
+
+该函数所需的参数分别为：
+- s request.Session对象，可以通过`get_sessions()`获取
+- gtk_num 通过调用`get_gtk(s)`函数获取
+- uin 个人QQ号
+- key 说说的`curlikekey`或称`orglikekey`，可在`get_feeds`系列函数（即`get_person_feeds`、`get_feeds`及`get_active_feeds`）的返回值中获取
+
+该函数返回为指定说说点赞人的详细信息组成的`list`对象，可通过遍历获取每一条的点赞人详细信息。
